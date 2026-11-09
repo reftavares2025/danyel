@@ -20,8 +20,13 @@ from . import sinais as S
 from .config import DADOS
 
 
+_SEGREDO = re.compile(r"(access_token=)[^&\s'\"]+|EAA[A-Za-z0-9]{20,}")
+
+
 def log(msg: str):
     DADOS.mkdir(parents=True, exist_ok=True)
+    # nunca grava token do Meta no log (pode vir dentro de URL de erro do requests)
+    msg = _SEGREDO.sub(lambda m: (m.group(1) or "") + "***", str(msg))
     linha = f"{datetime.now():%Y-%m-%d %H:%M:%S} {msg}"
     print(linha)
     with open(DADOS / "robo.log", "a", encoding="utf-8") as f:

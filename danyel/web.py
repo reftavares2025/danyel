@@ -59,7 +59,11 @@ def capturar(texto, url="", autor="", oferta_id=None):
 @app.before_request
 def _so_local():
     """Só aceita gravação vinda do próprio painel: um site qualquer aberto no
-    seu Chrome não consegue enfiar dados ou mudar o funil (proteção CSRF)."""
+    seu Chrome não consegue enfiar dados ou mudar o funil (proteção CSRF).
+    Também recusa Host diferente de localhost/127.0.0.1 (proteção contra DNS rebinding,
+    que deixaria um site externo ler o /exportar.csv com os leads)."""
+    if request.host.split(":")[0] not in ("localhost", "127.0.0.1"):
+        abort(403)
     if request.method == "POST":
         origem = request.headers.get("Origin") or request.headers.get("Referer") or ""
         if origem and not origem.startswith((f"http://localhost:{request.host.split(':')[-1]}",
@@ -185,9 +189,14 @@ def exportar():
     buf = io.StringIO()
     w = csv.writer(buf, delimiter=";")
     w.writerow(["id", "criado", "rede", "autor", "url", "etapa", "score", "intencao", "telefone", "texto", "mensagem", "notas"])
+    def seguro(v):
+        # texto de post vem de estranhos: "=HYPERLINK(...)" viraria fórmula no Excel
+        s = "" if v is None else str(v)
+        return "'" + s if s[:1] in ("=", "+", "-", "@", "\t", "\r") else s
+
     for l in CON.execute("SELECT * FROM leads ORDER BY id"):
-        w.writerow([l["id"], l["criado"], l["rede"], l["autor"], l["url"], l["etapa"], l["score"], l["intencao"],
-                    l["telefone"], l["texto"], l["mensagem"], l["notas"]])
+        w.writerow([seguro(v) for v in (l["id"], l["criado"], l["rede"], l["autor"], l["url"], l["etapa"], l["score"],
+                    l["intencao"], l["telefone"], l["texto"], l["mensagem"], l["notas"])])
     return Response("﻿" + buf.getvalue(), mimetype="text/csv",
                     headers={"Content-Disposition": "attachment; filename=danyel-leads.csv"})
 
