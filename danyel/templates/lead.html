@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titulo %}{{ l.autor or 'Lead' }} – Danyel{% endblock %}
+{% block corpo %}
+{% set a = l.analise|json %}
+{% if l.analisando %}<meta http-equiv="refresh" content="4">{% endif %}
+<p><a href="{{ url_for('inicio') }}">← Funil</a></p>
+
+<div class="card">
+  <div class="row">
+    {% if l.analisando %}<span class="score s-na">…</span><span class="muted">Danyel está analisando (a página atualiza sozinha)</span>
+    {% elif l.score is not none %}<span class="score {{ 's-hi' if l.score>=70 else ('s-md' if l.score>=40 else 's-lo') }}">{{ l.score }}</span>{% endif %}
+    <b style="font-size:18px">{{ l.autor or 'Sem nome' }}</b>
+    <span class="pill">{{ l.rede }}</span><span class="pill">{{ ETAPA_NOME[l.etapa] }}</span>
+    {% if l.url %}<a class="btn" href="{{ l.url }}" target="_blank" rel="noopener">Abrir post ↗</a>{% endif %}
+  </div>
+  {% if a %}
+  <p><b>{{ a.resumo }}</b></p>
+  <div class="row">
+    <span class="pill">intenção: {{ a.intencao }}</span><span class="pill">pagamento: {{ a.forma_pagamento }}</span>
+    <span class="pill">urgência: {{ a.urgencia }}</span>{% if a.cidade %}<span class="pill">{{ a.cidade }}</span>{% endif %}
+    {% if a.orcamento %}<span class="pill">orçamento: {{ a.orcamento }}</span>{% endif %}<span class="pill">canal: {{ a.canal }}</span>
+  </div>
+  <p class="muted">Por quê: {{ a.motivo }} <small>({{ a.fonte }})</small></p>
+  {% endif %}
+  <details><summary class="muted">Texto original</summary><pre>{{ l.texto }}</pre></details>
+</div>
+
+<form class="card" method="post">
+  <label>Mensagem de abordagem <span class="muted">(revise antes de enviar)</span></label>
+  <textarea name="mensagem" id="msg" style="min-height:150px">{{ l.mensagem or '' }}</textarea>
+  <div class="row" style="margin-top:8px">
+    <button type="button" class="btn-p" onclick="navigator.clipboard.writeText(document.getElementById('msg').value);this.textContent='Copiado ✓'">Copiar mensagem</button>
+    {% if l.telefone %}<a class="btn" target="_blank" rel="noopener" href="{{ l|wa }}">Enviar no WhatsApp ↗</a>{% endif %}
+    {% if l.url %}<a class="btn" href="{{ l.url }}" target="_blank" rel="noopener">Abrir post e colar ↗</a>{% endif %}
+    <button name="acao" value="reanalisar">Reanalisar com IA</button>
+  </div>
+  <div class="row">
+    <div style="flex:1;min-width:200px"><label>Nome / perfil</label><input name="autor" value="{{ l.autor or '' }}"></div>
+    <div style="flex:1;min-width:200px"><label>Telefone</label><input name="telefone" value="{{ l.telefone or '' }}" placeholder="(19) 9xxxx-xxxx"></div>
+  </div>
+  <label>Notas</label><textarea name="notas" style="min-height:70px">{{ l.notas or '' }}</textarea>
+  <p><button name="acao" value="salvar">Salvar</button></p>
+</form>
+
+<form class="card" method="post">
+  <input type="hidden" name="acao" value="etapa">
+  <b>Mover no funil:</b>
+  <div class="row" style="margin-top:8px">
+    {% for k, nome in ETAPAS %}<button name="etapa" value="{{ k }}" {% if k==l.etapa %}class="btn-p"{% endif %}>{{ nome }}</button>{% endfor %}
+  </div>
+  <p class="muted">Depois de enviar a mensagem, clique em <b>Abordado</b>. Se não responder em {{ CFG.painel.dias_para_retorno }} dias, ele volta na lista de retorno.</p>
+</form>
+
+<div class="card">
+  <b>Histórico</b>
+  {% for h in hist %}<div class="muted">{{ h.quando.replace('T',' ') }} — {{ h.evento }}</div>{% endfor %}
+  <form method="post" style="margin-top:12px" onsubmit="return confirm('Apagar os dados desta pessoa e nunca mais sugerir contato?')">
+    <button name="acao" value="bloquear" class="erro">Pediu para não ser contatado (LGPD)</button>
+  </form>
+</div>
+{% endblock %}

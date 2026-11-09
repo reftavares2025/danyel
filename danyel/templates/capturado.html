@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block corpo %}
+<div class="card">
+  {% if lid and not erro %}
+    <h2 style="margin-top:0">✓ Mandado para o Danyel</h2>
+    <p class="muted">Ele está analisando e escrevendo a abordagem.</p>
+    <p><a class="btn-p btn" href="{{ url_for('lead', lid=lid) }}" target="_blank">Ver lead</a> <button onclick="window.close()">Fechar</button></p>
+    <script>setTimeout(()=>window.close(),2500)</script>
+  {% else %}
+    <h2 style="margin-top:0">{{ erro }}</h2>
+    {% if lid %}<p><a class="btn" href="{{ url_for('lead', lid=lid) }}" target="_blank">Ver lead</a></p>{% endif %}
+    <button onclick="window.close()">Fechar</button>
+  {% endif %}
+</div>
+{% endblock %}

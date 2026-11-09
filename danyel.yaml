@@ -1,0 +1,87 @@
+# =====================================================================
+# DANYEL – agente de prospecção B2C em redes sociais
+# Edite este arquivo para trocar o que está à venda, a região e o tom.
+# =====================================================================
+
+vendedor:
+  nome: "Daniel"          # o proprietário: quem fala com o comprador
+  whatsapp: "5519900000001"          # só números, com 55 + DDD
+  tom: "próximo, direto e educado, de quem é da região; nunca insistente"
+
+# O que o Danyel está vendendo agora. Pode ter mais de uma oferta.
+ofertas:
+  - id: casa-cosmopolis
+    titulo: "2 casas no mesmo terreno de 440 m² – Jardim Bela Vista III, Cosmópolis/SP"
+    preco: "R$ 669.000"
+    link: "https://reftavares2025.github.io/casa-cosmopolis/"
+    condicoes: >-
+      Somente à vista ou com troca + volta em dinheiro (aceita terreno, chácara,
+      carro ou imóvel de menor valor). NÃO aceita financiamento bancário nem FGTS.
+    resumo: >-
+      Terreno de 440 m² com duas casas completas. Frente: 3 dormitórios, sala,
+      cozinha, banheiro, garagem coberta. Fundos: 2 dormitórios (1 suíte), sala,
+      cozinha, copa, banheiro. Água e luz com medidores separados, portão e
+      fechadura eletrônicos, pintura e elétrica recentes, quintal com churrasqueira.
+      Perto do Centro, do Hospital e do Clube Cosmopolitano.
+    comprador_ideal:
+      - "família grande ou que quer morar perto dos pais/filhos, cada um na sua casa"
+      - "quem quer morar em uma e alugar a outra (renda de aluguel)"
+      - "investidor que compra à vista para renda"
+      - "quem tem terreno, chácara, carro ou imóvel menor para dar na troca"
+    desqualifica:
+      - "só pode comprar financiado / Minha Casa Minha Vida / FGTS"
+      - "procura casa para ALUGAR"
+      - "orçamento claramente abaixo de R$ 450 mil sem bem para troca"
+
+# Onde caçar. As cidades formam o raio de ~17 km de Cosmópolis.
+caca:
+  cidades: ["Cosmópolis", "Artur Nogueira", "Paulínia", "Engenheiro Coelho", "Holambra", "Americana", "Santo Antônio de Posse"]
+  frases:
+    - "procuro casa"
+    - "quero comprar casa"
+    - "compro casa"
+    - "procura-se casa"
+    - "alguém vendendo casa"
+    - "indicação de casa à venda"
+    - "casa com edícula"
+    - "duas casas no mesmo terreno"
+    - "aceita troca"
+  hashtags: ["cosmopolis", "imoveiscosmopolis", "arturnogueira", "paulinia", "casaavendacosmopolis", "imoveisarturnogueira"]
+
+# Robô automático: varre o Facebook com a sua conta, manda relatório para o
+# aprovador no WhatsApp (cópia para o Régis) e só envia o que for aprovado.
+robo:
+  # modo: "contato_direto" = o relatório leva ao Daniel o link do post e o WhatsApp de cada
+  #       pessoa e ELE entra em contato (nada é enviado aos interessados).
+  #       "robo_envia" = o Daniel responde APROVO e o robô manda a mensagem.
+  modo: "contato_direto"
+  # Comenta direto (sem aprovação) nos posts de quem procura casa, pelo Facebook do Daniel,
+  # com o WhatsApp dele. Depois manda ao Daniel e ao Régis só os links dos comentários.
+  comentar: true
+  nota_minima_comentario: 50   # só comenta em post de quem vale a pena
+  limite_comentarios_dia: 8
+  aprovador_nome: "Aprovador"   # quem recebe o relatório de leads
+  aprovador_whatsapp: "5519900000002"
+  aprovador_nome_whatsapp: "Aprovador"   # nome do contato como aparece no seu WhatsApp
+  copia_whatsapp: ""                   # sem cópia: só o aprovador recebe
+  nota_minima: 50                     # filtro: só vai quem vale a pena (nota >= 50, compra/troca/investimento, sem financiamento)
+  limite_total_dia: 10                # TRAVA: no máximo 10 mensagens por dia
+  limite_facebook_dia: 5              # TRAVA: no máximo 5 delas pelo Messenger
+  horario: [8, 20]                    # só envia entre 8h e 20h
+  buscas_por_ciclo: 4                 # buscas no Facebook por varredura (ritmo humano)
+  avisar_quando_vazio: false          # sem comprador bom = não manda nada
+
+navegador:
+  harness: ""                         # vazio = acha sozinho o browser-harness
+  # Chrome separado, logado no Facebook do Daniel (abra com "ABRIR FACEBOOK DO DANIEL.bat").
+  # A varredura do Facebook usa ele; o WhatsApp continua no seu Chrome.
+  facebook_cdp: "http://127.0.0.1:9223"
+
+cerebro:
+  ligado: true        # false = usa só regras simples, sem IA
+  modelo: ""          # vazio = modelo padrão da sua assinatura do Claude
+  timeout_seg: 120
+
+painel:
+  porta: 5556
+  dias_para_retorno: 2   # lead abordado sem resposta há X dias volta para a lista de retorno

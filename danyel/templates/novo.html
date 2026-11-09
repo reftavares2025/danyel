@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block titulo %}Capturar – Danyel{% endblock %}
+{% block corpo %}
+<form class="card" method="post">
+  <h2 style="margin-top:0">{{ 'Mandar para o Danyel' if popup else 'Novo lead' }}</h2>
+  {% if erro %}<p class="erro">{{ erro }}</p>{% endif %}
+  <label>Texto do post ou comentário</label>
+  <textarea name="texto" required>{{ pre.get('texto','') }}</textarea>
+  <label>Nome / @perfil da pessoa</label>
+  <input name="autor" value="{{ pre.get('autor','') }}" placeholder="Ex.: Maria Souza ou @maria.souza">
+  <label>Link do post</label>
+  <input name="url" value="{{ pre.get('url','') }}" placeholder="https://...">
+  {% if CFG.ofertas|length > 1 %}
+  <label>Oferta</label>
+  <select name="oferta_id">{% for o in CFG.ofertas %}<option value="{{ o.id }}">{{ o.titulo }}</option>{% endfor %}</select>
+  {% endif %}
+  <p><button class="btn-p">Salvar e analisar</button></p>
+</form>
+{% endblock %}

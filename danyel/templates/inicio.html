@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block corpo %}
+{% set popup = False %}
+<div class="funil">
+  <a href="{{ url_for('inicio') }}" class="{{ 'on' if not etapa }}"><strong>{{ contagem.values()|sum - contagem.get('descartado',0) }}</strong>Ativos</a>
+  {% for k, nome in ETAPAS %}
+  <a href="{{ url_for('inicio', etapa=k) }}" class="{{ 'on' if etapa==k }}"><strong>{{ contagem.get(k,0) }}</strong>{{ nome }}</a>
+  {% endfor %}
+</div>
+
+{% if retorno %}
+<div class="card aviso">
+  <b>Hora do retorno</b> <span class="muted">— abordados há {{ CFG.painel.dias_para_retorno }}+ dias sem resposta</span>
+  {% for l in retorno %}<div><a href="{{ url_for('lead', lid=l.id) }}">{{ l.autor or 'Sem nome' }} ({{ l.rede }})</a> <span class="muted">abordado {{ l.abordado_em[:10] }}</span></div>{% endfor %}
+</div>
+{% endif %}
+
+{% if redes %}
+<div class="row" style="margin-bottom:10px">
+  <span class="muted">Rede:</span>
+  <a class="pill" href="{{ url_for('inicio', etapa=etapa) }}">todas</a>
+  {% for r in redes %}<a class="pill" href="{{ url_for('inicio', etapa=etapa, rede=r) }}">{{ r }}</a>{% endfor %}
+</div>
+{% endif %}
+
+{% if not leads %}
+<div class="card">
+  <b>Nenhum lead aqui ainda.</b>
+  <p class="muted">Comece por <a href="{{ url_for('cacar') }}">Caçar hoje</a>: instale o botão Danyel no Chrome, abra as buscas do dia e mande para cá os posts de quem quer comprar.</p>
+</div>
+{% endif %}
+
+{% for l in leads %}
+{% set a = l.analise|json %}
+<a class="card lead" href="{{ url_for('lead', lid=l.id) }}">
+  {% if l.analisando %}<span class="score s-na">…</span>
+  {% elif l.score is none %}<span class="score s-na">–</span>
+  {% else %}<span class="score {{ 's-hi' if l.score>=70 else ('s-md' if l.score>=40 else 's-lo') }}">{{ l.score }}</span>{% endif %}
+  <div>
+    <div class="row"><b>{{ l.autor or 'Sem nome' }}</b><span class="pill">{{ l.rede }}</span>
+      {% if l.intencao %}<span class="pill">{{ l.intencao }}</span>{% endif %}
+      {% if a.forma_pagamento and a.forma_pagamento!='desconhecida' %}<span class="pill">{{ a.forma_pagamento }}</span>{% endif %}
+      {% if l.telefone %}<span class="pill">tem telefone</span>{% endif %}</div>
+    <div class="muted trecho">{{ a.resumo or l.texto }}</div>
+  </div>
+  <span class="pill">{{ ETAPA_NOME[l.etapa] }}</span>
+</a>
+{% endfor %}
+
+<details class="card"><summary><b>Colar vários posts de uma vez</b></summary>
+<form method="post" action="{{ url_for('importar') }}">
+  <p class="muted">Um post por bloco. Primeira linha pode ser o link. Separe os blocos com uma linha contendo só <code>---</code>.</p>
+  <textarea name="lote" style="min-height:180px" placeholder="https://www.facebook.com/groups/.../posts/...&#10;Procuro casa em Cosmópolis com 3 quartos, pago à vista&#10;---&#10;Alguém vendendo casa com edícula em Artur Nogueira?"></textarea>
+  <p><button class="btn-p">Importar e analisar</button></p>
+</form></details>
+{% endblock %}

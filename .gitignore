@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+data/
+danyel.local.yaml
+.pytest_cache/
+chrome-daniel/
+meta_daniel/estado.json
+meta_estado*.json
+*token*.txt
+.env

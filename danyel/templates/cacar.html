@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block titulo %}Caçar hoje – Danyel{% endblock %}
+{% block corpo %}
+<div class="card">
+  <h2 style="margin-top:0">1. Instale o botão Danyel no Chrome (uma vez só)</h2>
+  <p>Arraste este botão para a barra de favoritos do Chrome (<kbd>Ctrl+Shift+B</kbd> mostra a barra):</p>
+  <p><a class="btn btn-p" href="{{ bookmarklet }}" onclick="alert('Arraste este botão para a barra de favoritos. Não precisa clicar aqui.');return false;">⚡ Danyel</a></p>
+  <p class="muted">Como usar: em qualquer post ou comentário, <b>selecione o texto</b> com o mouse e clique em <b>⚡ Danyel</b> na barra. Ele abre uma janelinha, você confere o nome da pessoa e salva. A IA dá a nota e escreve a abordagem.</p>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">2. Rota de caça de hoje</h2>
+  <p class="muted">As buscas mudam todo dia. Abra com a sua conta, role os resultados recentes e mande para o Danyel só quem <b>procura para comprar</b>. Ignore quem está vendendo.</p>
+  {% for i in itens %}
+  <div class="row" style="padding:8px 0;border-top:1px solid var(--line)">
+    <span class="pill" style="min-width:80px;text-align:center">{{ i.rede }}</span>
+    <a href="{{ i.url }}" target="_blank" rel="noopener" style="flex:1">{{ i.rotulo }} ↗</a>
+    {% if i.dica %}<span class="muted" style="flex-basis:100%;padding-left:92px;font-size:13px">{{ i.dica }}</span>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">3. Regras de ouro</h2>
+  <ul>
+    <li>Responda primeiro <b>publicamente</b> no post ("Tenho uma opção no Bela Vista III, te chamei no privado"). Isso gera confiança e evita cair em spam.</li>
+    <li>No máximo <b>20 a 30 mensagens privadas por dia</b> por perfil. Mais que isso, Facebook e Instagram bloqueiam a conta.</li>
+    <li>Nunca mande a mesma mensagem idêntica para todos: o Danyel já personaliza, só revise.</li>
+    <li>Quem pedir para não receber mais, clique em <b>"Pediu para não ser contatado"</b>. O Danyel apaga os dados e não sugere de novo.</li>
+  </ul>
+</div>
+{% endblock %}
